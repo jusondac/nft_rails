@@ -1,0 +1,118 @@
+<% content_for :title, "My Posts - NFT Trials" %>
+<div class="max-w-6xl mx-auto">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">My Posts</h1>
+      <p class="text-gray-600">Manage your uploaded images and NFT minting status</p>
+    </div>
+    <%= link_to new_post_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center" do %>
+      <span class="mr-2">📤</span>
+      Upload New Image
+    <% end %>
+  </div>
+  <!-- Stats Overview -->
+  <div class="grid md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow-lg border">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600">Total Posts</p>
+          <p class="text-2xl font-bold text-gray-900"><%= @posts.count %></p>
+        </div>
+        <div class="text-3xl">📋</div>
+      </div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-lg border">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600">Minted NFTs</p>
+          <p class="text-2xl font-bold text-green-600"><%= @minted_posts.count %></p>
+        </div>
+        <div class="text-3xl">💎</div>
+      </div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-lg border">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600">Pending Mints</p>
+          <p class="text-2xl font-bold text-yellow-600"><%= @pending_posts.count %></p>
+        </div>
+        <div class="text-3xl">⏳</div>
+      </div>
+    </div>
+  </div>
+  <!-- Posts Grid -->
+  <% if @posts.any? %>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @posts.each do |post| %>
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+          <!-- Image -->
+          <div class="aspect-square relative">
+            <% if post.image.attached? %>
+              <%= image_tag post.image, class: "w-full h-full object-cover" %>
+            <% else %>
+              <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                <span class="text-gray-400 text-4xl">📷</span>
+              </div>
+            <% end %>
+            <!-- Status Badge -->
+            <div class="absolute top-3 right-3">
+              <% case post.status %>
+              <% when 'minted' %>
+                <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  💎 Minted
+                </span>
+              <% when 'minting' %>
+                <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  ⚡ Minting
+                </span>
+              <% when 'pending' %>
+                <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  ⏳ Pending
+                </span>
+              <% when 'failed' %>
+                <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  ❌ Failed
+                </span>
+              <% end %>
+            </div>
+          </div>
+          <!-- Content -->
+          <div class="p-6">
+            <h3 class="font-semibold text-lg text-gray-900 mb-2"><%= post.title %></h3>
+            <% if post.description.present? %>
+              <p class="text-gray-600 mb-4 line-clamp-2"><%= truncate(post.description, length: 100) %></p>
+            <% end %>
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+              <span>Created <%= time_ago_in_words(post.created_at) %> ago</span>
+              <% if post.nft.present? %>
+                <span class="text-green-600 font-medium">NFT #<%= post.nft.token_id %></span>
+              <% end %>
+            </div>
+            <!-- Actions -->
+            <div class="flex space-x-2">
+              <%= link_to "View", post_path(post), class: "flex-1 bg-gray-100 text-gray-700 text-center py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors" %>
+              <% unless post.minted? %>
+                <%= link_to "Edit", edit_post_path(post), class: "bg-blue-100 text-blue-700 text-center py-2 px-3 rounded-lg hover:bg-blue-200 transition-colors" %>
+                <%= link_to "Delete", post_path(post), 
+                            data: { 
+                              turbo_method: :delete, 
+                              turbo_confirm: "Are you sure you want to delete this post?" 
+                            },
+                            class: "bg-red-100 text-red-700 text-center py-2 px-3 rounded-lg hover:bg-red-200 transition-colors" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <!-- Empty State -->
+    <div class="text-center py-12">
+      <div class="text-6xl mb-4">📷</div>
+      <h2 class="text-2xl font-semibold text-gray-900 mb-2">No posts yet</h2>
+      <p class="text-gray-600 mb-6">Upload your first image to start creating NFTs</p>
+      <%= link_to "Upload Image", new_post_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors" %>
+    </div>
+  <% end %>
+</div>

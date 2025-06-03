@@ -1,0 +1,180 @@
+<% content_for :title, "#{@post.title} - NFT Trials" %>
+<div class="max-w-4xl mx-auto">
+  <!-- Back Button -->
+  <div class="mb-6">
+    <%= link_to posts_path, class: "inline-flex items-center text-gray-600 hover:text-gray-800" do %>
+      <span class="mr-2">←</span>
+      Back to Posts
+    <% end %>
+  </div>
+  <div class="grid lg:grid-cols-2 gap-8">
+    <!-- Image Section -->
+    <div class="space-y-4">
+      <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+        <% if @post.image.attached? %>
+          <%= image_tag @post.image, class: "w-full h-full object-cover" %>
+        <% else %>
+          <div class="w-full h-full flex items-center justify-center">
+            <span class="text-gray-400 text-6xl">📷</span>
+          </div>
+        <% end %>
+      </div>
+      <!-- Image Actions -->
+      <div class="flex space-x-2">
+        <% unless @post.minted? %>
+          <%= link_to "Edit Post", edit_post_path(@post), class: "flex-1 bg-blue-600 text-white text-center py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors" %>
+          <%= button_to "Delete", post_path(@post), 
+                      data: { 
+                        turbo_method: :delete, 
+                        turbo_confirm: "Are you sure? This action cannot be undone." 
+                      },
+                      class: "flex-1 bg-red-600 text-white text-center py-2 px-4 rounded-lg hover:bg-red-700 transition-colors" %>
+        <% else %>
+          <div class="flex-1 bg-green-100 text-green-800 text-center py-2 px-4 rounded-lg">
+            🔒 NFT Minted - Cannot Edit
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <!-- Details Section -->
+    <div class="space-y-6">
+      <!-- Title and Status -->
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <h1 class="text-3xl font-bold text-gray-900"><%= @post.title %></h1>
+          <!-- Status Badge -->
+          <% case @post.status %>
+          <% when 'minted' %>
+            <span class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+              💎 Minted
+            </span>
+          <% when 'minting' %>
+            <span class="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+              ⚡ Minting
+            </span>
+          <% when 'pending' %>
+            <span class="bg-yellow-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+              ⏳ Pending
+            </span>
+          <% when 'failed' %>
+            <span class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+              ❌ Failed
+            </span>
+          <% end %>
+        </div>
+        <div class="text-sm text-gray-500">
+          Created <%= time_ago_in_words(@post.created_at) %> ago by <%= @post.user.name %>
+        </div>
+      </div>
+      <!-- Description -->
+      <% if @post.description.present? %>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-2">Description</h3>
+          <p class="text-gray-700 leading-relaxed"><%= simple_format(@post.description) %></p>
+        </div>
+      <% end %>
+      <!-- NFT Information -->
+      <% if @nft.present? %>
+        <div class="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-lg border">
+          <h3 class="font-semibold text-gray-900 mb-4 flex items-center">
+            <span class="mr-2">💎</span>
+            NFT Information
+          </h3>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span class="text-gray-600">Token ID:</span>
+              <span class="font-mono text-gray-900 block">#<%= @nft.token_id %></span>
+            </div>
+            <div>
+              <span class="text-gray-600">Blockchain:</span>
+              <span class="font-medium text-gray-900 block capitalize"><%= @nft.blockchain %></span>
+            </div>
+            <div>
+              <span class="text-gray-600">Contract:</span>
+              <span class="font-mono text-gray-900 block text-xs"><%= truncate(@nft.contract_address, length: 20) %></span>
+            </div>
+            <div>
+              <span class="text-gray-600">Minted:</span>
+              <span class="text-gray-900 block"><%= @nft.minted_at.strftime("%b %d, %Y") %></span>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-purple-200">
+            <%= link_to nft_path(@nft), class: "inline-flex items-center text-purple-700 hover:text-purple-800 font-medium" do %>
+              <span class="mr-1">🔗</span>
+              View NFT Details
+            <% end %>
+          </div>
+        </div>
+      <% elsif @post.status == 'minting' %>
+        <div class="bg-blue-100 p-6 rounded-lg border border-blue-200">
+          <h3 class="font-semibold text-blue-900 mb-2 flex items-center">
+            <span class="mr-2">⚡</span>
+            Minting in Progress
+          </h3>
+          <p class="text-blue-700 text-sm">
+            Your image is being processed and minted as an NFT. This usually takes a few minutes. 
+            You'll be notified once the minting is complete.
+          </p>
+          <div class="mt-3">
+            <div class="animate-pulse flex space-x-1">
+              <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      <% elsif @post.status == 'failed' %>
+        <div class="bg-red-100 p-6 rounded-lg border border-red-200">
+          <h3 class="font-semibold text-red-900 mb-2 flex items-center">
+            <span class="mr-2">❌</span>
+            Minting Failed
+          </h3>
+          <p class="text-red-700 text-sm mb-3">
+            There was an error minting your image as an NFT. Please try uploading again or contact support.
+          </p>
+          <%= link_to "Try Again", new_post_path, class: "bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 transition-colors" %>
+        </div>
+      <% else %>
+        <div class="bg-yellow-100 p-6 rounded-lg border border-yellow-200">
+          <h3 class="font-semibold text-yellow-900 mb-2 flex items-center">
+            <span class="mr-2">⏳</span>
+            Waiting to Mint
+          </h3>
+          <p class="text-yellow-700 text-sm">
+            Your image is in the queue to be minted as an NFT. The minting process will start automatically.
+          </p>
+        </div>
+      <% end %>
+      <!-- Technical Details -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h4 class="font-medium text-gray-900 mb-3">Technical Details</h4>
+        <div class="text-sm space-y-2">
+          <div class="flex justify-between">
+            <span class="text-gray-600">File Size:</span>
+            <span class="text-gray-900">
+              <% if @post.image.attached? %>
+                <%= number_to_human_size(@post.image.byte_size) %>
+              <% else %>
+                N/A
+              <% end %>
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Content Type:</span>
+            <span class="text-gray-900">
+              <% if @post.image.attached? %>
+                <%= @post.image.content_type %>
+              <% else %>
+                N/A
+              <% end %>
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Uploaded:</span>
+            <span class="text-gray-900"><%= @post.created_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+<% content_for :title, "Edit #{@post.title} - NFT Trials" %>
+<div class="max-w-2xl mx-auto">
+  <!-- Back Button -->
+  <div class="mb-6">
+    <%= link_to post_path(@post), class: "inline-flex items-center text-gray-600 hover:text-gray-800" do %>
+      <span class="mr-2">←</span>
+      Back to Post
+    <% end %>
+  </div>
+  <div class="bg-white p-8 rounded-lg shadow-lg">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Edit Post</h1>
+      <p class="text-gray-600">Update your post details (image cannot be changed)</p>
+    </div>
+    <%= form_with model: @post, local: true, class: "space-y-6" do |form| %>
+      <% if @post.errors.any? %>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <ul class="list-disc list-inside">
+            <% @post.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <!-- Current Image Preview -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Current Image</label>
+        <div class="border-2 border-gray-200 rounded-lg p-4">
+          <% if @post.image.attached? %>
+            <img src="<%= url_for(@post.image) %>" class="max-w-full h-48 object-cover rounded-lg mx-auto" />
+          <% else %>
+            <div class="text-center text-gray-400">
+              <span class="text-4xl">📷</span>
+              <p>No image attached</p>
+            </div>
+          <% end %>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">Image cannot be changed after upload</p>
+      </div>
+      <!-- Title -->
+      <div>
+        <%= form.label :title, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.text_field :title, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "Give your artwork a title" %>
+        <p class="text-sm text-gray-500 mt-1">This will be the name of your NFT</p>
+      </div>
+      <!-- Description -->
+      <div>
+        <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.text_area :description, rows: 4, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "Describe your artwork (optional)" %>
+        <p class="text-sm text-gray-500 mt-1">This will be included in your NFT metadata</p>
+      </div>
+      <!-- Status Info -->
+      <% if @post.status != 'pending' %>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div class="flex items-start">
+            <div class="text-2xl mr-3">⚠️</div>
+            <div>
+              <h3 class="font-medium text-yellow-900 mb-1">Note about editing</h3>
+              <p class="text-sm text-yellow-700">
+                <% case @post.status %>
+                <% when 'minting' %>
+                  Your post is currently being minted. Changes will not affect the minting process.
+                <% when 'minted' %>
+                  Your post has been minted as an NFT. Changes will not affect the blockchain record.
+                <% when 'failed' %>
+                  Your post failed to mint. You can edit the details and try uploading a new image.
+                <% end %>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <!-- Submit Button -->
+      <div class="flex space-x-4">
+        <%= form.submit "Update Post", class: "flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium" %>
+        <%= link_to "Cancel", post_path(@post), class: "flex-1 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors font-medium text-center" %>
+      </div>
+    <% end %>
+  </div>
+</div>

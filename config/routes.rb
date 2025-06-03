@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "nfts/index"
+  get "nfts/show"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -9,6 +11,21 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # Root route
+  root "home#index"
+
+  # Authentication routes
+  get "signup", to: "users#new"
+  get "login", to: "sessions#new"
+  post "login", to: "sessions#create"
+  delete "logout", to: "sessions#destroy"
+
+  # Dashboard
+  get "dashboard", to: "home#dashboard"
+  get "profile", to: "users#profile"
+
+  # Resources
+  resources :users, only: [ :create, :show ]
+  resources :posts
+  resources :nfts, only: [ :index, :show ]
 end

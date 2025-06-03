@@ -1,0 +1,128 @@
+<% content_for :title, "My NFT Collection - NFT Trials" %>
+<div class="max-w-6xl mx-auto">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">My NFT Collection</h1>
+      <p class="text-gray-600">Your digital assets on the blockchain</p>
+    </div>
+    <%= link_to new_post_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center" do %>
+      <span class="mr-2">➕</span>
+      Create New NFT
+    <% end %>
+  </div>
+  <!-- Stats Overview -->
+  <div class="grid md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 rounded-lg shadow-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-purple-100">Total NFTs</p>
+          <p class="text-3xl font-bold"><%= @total_nfts %></p>
+        </div>
+        <div class="text-4xl opacity-75">💎</div>
+      </div>
+    </div>
+    <div class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-6 rounded-lg shadow-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-blue-100">Ethereum NFTs</p>
+          <p class="text-3xl font-bold"><%= @ethereum_nfts %></p>
+        </div>
+        <div class="text-4xl opacity-75">⚡</div>
+      </div>
+    </div>
+    <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-6 rounded-lg shadow-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-green-100">Collection Value</p>
+          <p class="text-3xl font-bold">—</p>
+        </div>
+        <div class="text-4xl opacity-75">💰</div>
+      </div>
+    </div>
+  </div>
+  <!-- NFT Grid -->
+  <% if @nfts.any? %>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @nfts.each do |nft| %>
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <!-- Image -->
+          <div class="aspect-square relative group">
+            <% if nft.post&.image&.attached? %>
+              <%= image_tag nft.post.image, class: "w-full h-full object-cover" %>
+            <% else %>
+              <div class="w-full h-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+                <span class="text-white text-6xl">💎</span>
+              </div>
+            <% end %>
+            <!-- Blockchain Badge -->
+            <div class="absolute top-3 left-3">
+              <span class="bg-black bg-opacity-70 text-white px-3 py-1 rounded-full text-sm font-medium">
+                <%= nft.blockchain.capitalize %>
+              </span>
+            </div>
+            <!-- Hover Overlay -->
+            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+              <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <%= link_to nft_path(nft), class: "bg-white text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors" do %>
+                  View Details
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <!-- Content -->
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="font-semibold text-lg text-gray-900 flex-1"><%= nft.title %></h3>
+              <span class="text-sm text-gray-500 ml-2">#<%= nft.token_id %></span>
+            </div>
+            <% if nft.description.present? %>
+              <p class="text-gray-600 mb-4 text-sm line-clamp-2"><%= truncate(nft.description, length: 80) %></p>
+            <% end %>
+            <!-- NFT Details -->
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Minted:</span>
+                <span class="text-gray-900"><%= nft.minted_at.strftime("%b %d, %Y") %></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Contract:</span>
+                <span class="font-mono text-gray-900 text-xs">
+                  <%= truncate(nft.contract_address, length: 12) %>...
+                </span>
+              </div>
+            </div>
+            <!-- Actions -->
+            <div class="mt-4 pt-4 border-t border-gray-100">
+              <div class="flex space-x-2">
+                <%= link_to "View NFT", nft_path(nft), class: "flex-1 bg-purple-100 text-purple-700 text-center py-2 px-3 rounded-lg hover:bg-purple-200 transition-colors text-sm font-medium" %>
+                <% if nft.post.present? %>
+                  <%= link_to "View Post", post_path(nft.post), class: "flex-1 bg-gray-100 text-gray-700 text-center py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium" %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <!-- Load More Button (for future pagination) -->
+    <div class="text-center mt-8">
+      <p class="text-gray-500 text-sm">Showing all <%= @nfts.count %> NFTs in your collection</p>
+    </div>
+  <% else %>
+    <!-- Empty State -->
+    <div class="text-center py-16">
+      <div class="text-8xl mb-6">💎</div>
+      <h2 class="text-3xl font-semibold text-gray-900 mb-4">No NFTs Yet</h2>
+      <p class="text-gray-600 mb-8 max-w-md mx-auto">
+        You haven't minted any NFTs yet. Upload your first image to start building your digital collection.
+      </p>
+      <div class="space-y-4">
+        <%= link_to "Upload First Image", new_post_path, class: "bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium inline-block" %>
+        <div>
+          <%= link_to "View Posts", posts_path, class: "text-blue-600 hover:text-blue-800 text-sm" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

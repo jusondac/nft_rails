@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  token_id: MyString
+  contract_address: MyString
+  metadata: MyText
+  minted_at: 2025-06-03 10:27:49
+  blockchain: MyString
+  title: MyString
+  description: MyText
+
+two:
+  user: two
+  token_id: MyString
+  contract_address: MyString
+  metadata: MyText
+  minted_at: 2025-06-03 10:27:49
+  blockchain: MyString
+  title: MyString
+  description: MyText
