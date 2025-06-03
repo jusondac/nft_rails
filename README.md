@@ -1,4 +1,5 @@
 # NFT Trials - Digital Art NFT Simulation Platform
+![Screenshot From 2025-06-03 11-14-41](https://github.com/user-attachments/assets/50e16fb2-4da2-4441-b700-e127debc2ea4)
 
 NFT Trials is a Ruby on Rails application that simulates the process of minting digital artwork as NFTs (Non-Fungible Tokens). This platform allows users to upload digital images and experience a realistic NFT minting workflow without actually interacting with real blockchain networks.
 
